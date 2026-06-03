@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audiory Producer Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3cff;
+            --primary-light: #2d5bff;
+            --bg-dark: #0b1020;
+            --bg-light: #f5f7ff;
+            --card-white: #ffffff;
+            --text-dark: #0b1020;
+            --text-light: #64748b;
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 70px;
+            --border-color: #e2e8f0;
+            --accent-green: #10b981;
+            --accent-gold: #f59e0b;
+            --gradient-blue: linear-gradient(135deg, #0b1020 0%, #1a3cff 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- SIDEBAR STYLING --- */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar-brand {
+            padding: 24px;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: var(--gradient-blue);
+        }
+
+        .sidebar-brand i {
+            color: var(--primary-light);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 24px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .sidebar-item a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .sidebar-item a:hover, .sidebar-item.active a {
+            color: #ffffff;
+            background-color: rgba(26, 60, 255, 0.2);
+        }
+
+        .sidebar-item.active a {
+            background-color: var(--primary);
+            box-shadow: 0 4px 14px rgba(26, 60, 255, 0.4);
+        }
+
+        .sidebar-item a i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+
+        .sidebar-toggle-btn {
+            display: none;
+            position: absolute;
+            top: 20px;
+            right: -40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* --- MAIN CONTENT LAYOUT --- */
+        main {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 40px;
+            max-width: calc(100vw - var(--sidebar-width));
+            transition: var(--transition-smooth);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background: var(--gradient-blue);
+            color: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(45,91,255,0.2) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero-subtitle {
+            font-size: 16px;
+            color: #cbd5e1;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        /* --- STATS GRID --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background-color: var(--card-white);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background-color: rgba(26, 60, 255, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-info .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .stat-info .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* --- GENERIC DASHBOARD COMPONENTS --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .hub-section {
+            margin-bottom: 56px;
+            scroll-margin-top: 40px;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(26, 60, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+            box-shadow: 0 6px 12px rgba(45, 91, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: var(--text-dark);
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background-color: var(--accent-green);
+            color: white;
+            cursor: default;
+        }
+
+        /* --- SECTION 1: MONTHLY BEAT CHALLENGES --- */
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .challenge-card {
+            background-color: var(--card-white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .challenge-img-container {
+            height: 180px;
+            position: relative;
+            background: linear-gradient(45deg, #1e293b, #0f172a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .challenge-banner-icon {
+            font-size: 64px;
+            color: rgba(255,255,255,0.15);
+        }
+
+        .challenge-status-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: var(--transition-smooth);
+        }
+
+        .challenge-status-badge.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .challenge-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .challenge-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .challenge-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .challenge-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .meta-item i {
+            color: var(--primary);
+        }
+
+        .meta-item span {
+            display: block;
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .challenge-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* --- SECTION 2: BADGES & PRODUCER LEVELS --- */
+        .progression-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .level-status-card {
+            background-color: var(--card-white);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+
+        .level-badge-visual {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gradient-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 20px rgba(26, 60, 255, 0.3);
+            position: relative;
+        }
+
+        .level-rank-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .xp-progress-wrapper {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .xp-text-flex {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .xp-text-flex .xp-current {
+            color: var(--primary);
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 100%;
+            background-color: #e2e8f0;
+            border-radius: 6px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 6px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .badges-showcase-card {
+            background-color: var(--card-white);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .badge-item {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition-smooth);
+            background-color: #fafafa;
+        }
+
+        .badge-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .badge-icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 20px;
+        }
+
+        .badge-item.unlocked .badge-icon-box {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent-gold);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .badge-item.locked {
+            opacity: 0.5;
+        }
+
+        .badge-item.locked .badge-icon-box {
+            background-color: #cbd5e1;
+            color: #64748b;
+        }
+
+        .badge-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .badge-status {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-item.unlocked .badge-status {
+            color: var(--accent-green);
+        }
+
+        .badge-item.locked .badge-status {
+            color: var(--text-light);
+        }
+
+        /* --- SECTION 3: PRODUCER LEADERBOARD --- */
+        .leaderboard-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .user-ranking-card {
+            background: var(--gradient-blue);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-rank-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-rank-number {
+            font-size: 28px;
+            font-weight: 800;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 16px;
+            border-radius: 8px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .user-rank-detail .user-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .user-rank-detail .user-meta-metrics {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-top: 4px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .user-rank-score-box {
+            text-align: right;
+        }
+
+        .user-rank-score-box .score-val {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .user-rank-score-box .score-lbl {
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+
+        .leaderboard-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            background-color: var(--card-white);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            font-size: 14px;
+            transition: var(--transition-smooth);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 60, 255, 0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+
+        .sort-select {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            background-color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sort-select:focus {
+            border-color: var(--primary);
+        }
+
+        .table-container {
+            background-color: var(--card-white);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .leaderboard-table th {
+            background-color: #fafafa;
+            padding: 16px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table td {
+            padding: 16px 24px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-dark);
+        }
+
+        .leaderboard-table tbody tr {
+            transition: var(--transition-smooth);
+        }
+
+        .leaderboard-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .leaderboard-table tbody tr.row-highlight {
+            background-color: rgba(26, 60, 255, 0.03);
+        }
+
+        .rank-cell {
+            font-weight: 700;
+            width: 80px;
+        }
+
+        .top-rank-1 { color: #f59e0b; }
+        .top-rank-2 { color: #cbd5e1; }
+        .top-rank-3 { color: #b45309; }
+
+        .producer-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .producer-avatar-placeholder {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* --- SECTION 4: OPPORTUNITIES BOARD --- */
+        .opportunities-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 10px 20px;
+            border-radius: 20px;
+            background-color: var(--card-white);
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition-smooth);
+        }
+
+        .category-tab:hover, .category-tab.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(26, 60, 255, 0.15);
+        }
+
+        .opportunities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .opportunity-card {
+            background-color: var(--card-white);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition-smooth);
+        }
+
+        .opportunity-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .opp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .opp-category-badge {
+            background-color: #f1f5f9;
+            color: var(--text-light);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .opp-budget {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .opp-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .opp-meta-row {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .opp-meta-row span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .opp-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        .opp-actions {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-icon-only {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .btn-bookmark.bookmarked {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent-gold);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        /* --- ANIMATIONS & GLOBAL UTILITIES --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in-element {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        /* --- RESPONSIVE LAYOUT MEDIA QUERIES --- */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .progression-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            aside {
+                left: calc(-1 * var(--sidebar-width));
+            }
+            aside.open {
+                left: 0;
+            }
+            .sidebar-toggle-btn {
+                display: block;
+            }
+            main {
+                margin-left: 0;
+                max-width: 100vw;
+                padding: 24px;
+            }
+            .leaderboard-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .hero {
+                padding: 24px;
+            }
+            .hero-title {
+                font-size: 26px;
+            }
+            .challenges-grid, .opportunities-grid {
+                grid-template-columns: 1fr;
+            }
+            .badges-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .user-ranking-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .user-rank-score-box {
+                text-align: left;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            .opp-actions {
+                grid-template-columns: 1fr;
+            }
+            .btn-icon-only {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <button class="sidebar-toggle-btn" id="sidebarToggle" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Audiory</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item active" id="menu-dash">
+                <a href="#" onclick="scrollToSection('top', 'dash')">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item" id="menu-challenges">
+                <a href="#challenges" onclick="scrollToSection('challenges', 'challenges')">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>Challenges</span>
+                </a>
+            </li>
+            <li class="sidebar-item" id="menu-levels">
+                <a href="#levels" onclick="scrollToSection('levels', 'levels')">
+                    <i class="fa-solid fa-medal"></i>
+                    <span>Levels</span>
+                </a>
+            </li>
+            <li class="sidebar-item" id="menu-leaderboard">
+                <a href="#leaderboard" onclick="scrollToSection('leaderboard', 'leaderboard')">
+                    <i class="fa-solid fa-ranking-star"></i>
+                    <span>Leaderboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item" id="menu-opportunities">
+                <a href="#opportunities" onclick="scrollToSection('opportunities', 'opportunities')">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Opportunities</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main id="main-content">
+        
+        <section class="hero" id="top">
+            <h1 class="hero-title">Producer Hub</h1>
+            <p class="hero-subtitle">Compete, earn recognition, discover opportunities and grow your producer career on Audiory.</p>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="stat-challenges">4</div>
+                    <div class="stat-label">Active Challenges</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="stat-producers">14,208</div>
+                    <div class="stat-label">Total Producers</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="stat-opportunities">12</div>
+                    <div class="stat-label">Open Opportunities</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-crown"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="stat-top-producer">Decap</div>
+                    <div class="stat-label">Top Producer</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="challenges" class="hub-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-trophy"></i> Monthly Beat Challenges</h2>
+            </div>
+            <div class="challenges-grid" id="challenges-container">
+                </div>
+        </section>
+
+        <section id="levels" class="hub-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-medal"></i> Badges & Producer Levels</h2>
+            </div>
+            <div class="progression-container">
+                
+                <div class="level-status-card">
+                    <div class="level-badge-visual" id="level-visual-icon">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="level-rank-name" id="level-display-name">Loading Level...</div>
+                    <div class="xp-progress-wrapper">
+                        <div class="xp-text-flex">
+                            <div><span class="xp-current" id="xp-current-display">0</span> XP</div>
+                            <div id="xp-percent-display">0%</div>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="xp-progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="badges-showcase-card">
+                    <h3 style="font-size: 16px; font-weight:700; margin-bottom: 4px;">Achievements Portfolio</h3>
+                    <p style="font-size: 13px; color: var(--text-light); margin-bottom: 16px;">Unlock profile badges by hit metrics and winning community events.</p>
+                    <div class="badges-grid" id="badges-container">
+                        </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="leaderboard" class="hub-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-ranking-star"></i> Producer Leaderboard</h2>
+            </div>
+            <div class="leaderboard-wrapper">
+                
+                <div class="user-ranking-card">
+                    <div class="user-rank-info">
+                        <div class="user-rank-number" id="user-highlight-rank">#14</div>
+                        <div class="user-rank-detail">
+                            <div class="user-name">You (Basecamp Beats)</div>
+                            <div class="user-meta-metrics">
+                                <span id="user-highlight-sales"><i class="fa-solid fa-cart-shopping"></i> 142 Sales</span>
+                                <span id="user-highlight-followers"><i class="fa-solid fa-users"></i> 1,205 Followers</span>
+                                <span id="user-highlight-wins"><i class="fa-solid fa-trophy"></i> 2 Wins</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-rank-score-box">
+                        <div class="score-val" id="user-highlight-score">4,250</div>
+                        <div class="score-lbl">Total Score Points</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-controls">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="leaderboard-search" class="search-input" placeholder="Search producers by name..." oninput="filterLeaderboard()">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="leaderboard-sort">Sort By</label>
+                        <select id="leaderboard-sort" class="sort-select" onchange="sortLeaderboard()">
+                            <option value="score">Highest Score</option>
+                            <option value="sales">Top Sales</option>
+                            <option value="followers">Most Followers</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="leaderboard-table" id="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Producer</th>
+                                <th>Sales</th>
+                                <th>Followers</th>
+                                <th>Challenge Wins</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody">
+                            </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="opportunities" class="hub-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-briefcase"></i> Opportunities Board</h2>
+            </div>
+            
+            <div class="search-wrapper" style="margin-bottom: 20px;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="opportunities-search" class="search-input" placeholder="Search opportunities by title or keyword..." oninput="filterOpportunities()">
+            </div>
+
+            <div class="opportunities-controls">
+                <button class="category-tab active" onclick="filterCategory('All', this)">All Opportunities</button>
+                <button class="category-tab" onclick="filterCategory('Production', this)">Production</button>
+                <button class="category-tab" onclick="filterCategory('Engineering', this)">Engineering</button>
+                <button class="category-tab" onclick="filterCategory('Design', this)">Design</button>
+                <button class="category-tab" onclick="filterCategory('Songwriting', this)">Songwriting</button>
+            </div>
+
+            <div class="opportunities-grid" id="opportunities-container">
+                </div>
+        </section>
+
+    </main>
+
+    <script>
+        /* ==========================================
+           FIREBASE PREPARATION CONTEXT NOTE
+           ------------------------------------------
+           // TODO: Implement Firebase setup configurations here
+           // import { initializeApp } from "firebase/app";
+           // import { getFirestore, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+           ========================================== */
+
+        // --- SEED DATABASES & INITIAL APPLICATION DATA ---
+        const initialChallenges = [
+            { id: "ch-afro", title: "Afrobeat Challenge", desc: "Craft an authentic, high-energy Burna Boy or Wizkid type riddim. Submissions must feature percussive patterns and organic melodic elements.", deadline: "June 20, 2026", prize: "$500 Cash + Homepage Feature", defaultParticipants: 342, iconClass: "fa-solid fa-drum" },
+            { id: "ch-trap", title: "Trap Challenge", desc: "Dark ambient synths combined with aggressive, rolling 808s. Think Metro Boomin meets Future industrial-level production.", deadline: "June 24, 2026", prize: "$300 Cash + Premium Sound Pack", defaultParticipants: 512, iconClass: "fa-solid fa-bolt" },
+            { id: "ch-dance", title: "Dancehall Challenge", desc: "Bring modern tropical island energy hit vibes. Focus heavily on syncopated bass grooves and smooth vocal-ready arrangements.", deadline: "June 28, 2026", prize: "$400 Cash + VST Plugin License", defaultParticipants: 189, iconClass: "fa-solid fa-compact-disc" },
+            { id: "ch-drill", title: "Drill Challenge", desc: "Sliding sub basslines, complex hi-hat tracks and dark cinematic orchestral textures. UK and New York style variants welcome.", deadline: "June 30, 2026", prize: "$500 Cash + Studio Session Mix", defaultParticipants: 274, iconClass: "fa-solid fa-fire-flame-curved" }
+        ];
+
+        const initialBadges = [
+            { id: "b1", name: "First Upload", metric: "Upload first beat track", unlocked: true, icon: "fa-solid fa-cloud-arrow-up" },
+            { id: "b2", name: "First Sale", metric: "Complete first commercial lease", unlocked: true, icon: "fa-solid fa-dollar-sign" },
+            { id: "b3", name: "10 Sales", metric: "Achieve 10 beat transactions", unlocked: true, icon: "fa-solid fa-bag-shopping" },
+            { id: "b4", name: "100 Sales", metric: "Achieve 100 beat transactions", unlocked: false, icon: "fa-solid fa-cart-flatbed-suitcase" },
+            { id: "b5", name: "Trending Producer", metric: "Gain 1k views within 24 hours", unlocked: false, icon: "fa-solid fa-arrow-trend-up" },
+            { id: "b6", name: "Verified Producer", metric: "Pass system verification check", unlocked: false, icon: "fa-solid fa-user-check" },
+            { id: "b7", name: "Top Seller", metric: "Rank top 5 on regional boards", unlocked: false, icon: "fa-solid fa-gem" },
+            { id: "b8", name: "Challenge Winner", metric: "Place 1st in an active hub challenge", unlocked: true, icon: "fa-solid fa-trophy" }
+        ];
+
+        const initialLeaderboard = [
+            { rank: 1, name: "Decap", sales: 1420, followers: 28400, wins: 8, score: 45200 },
+            { rank: 2, name: "MurdaBeatz", sales: 1105, followers: 31200, wins: 5, score: 39800 },
+            { rank: 3, name: "CashMoneyAP", sales: 980, followers: 19500, wins: 6, score: 34100 },
+            { rank: 4, name: "Southside", sales: 870, followers: 22100, wins: 4, score: 29400 },
+            { rank: 5, name: "Nick Mira", sales: 895, followers: 18400, wins: 3, score: 27600 },
+            { rank: 6, name: "Boy95", sales: 620, followers: 12100, wins: 4, score: 21300 },
+            { rank: 7, name: "OzVolts", sales: 540, followers: 9800, wins: 5, score: 19100 },
+            { rank: 8, name: "WonderGurl", sales: 510, followers: 14500, wins: 2, score: 18200 },
+            { rank: 9, name: "ForeignTeck", sales: 480, followers: 8900, wins: 3, score: 16400 },
+            { rank: 10, name: "T-Minus", sales: 420, followers: 11200, wins: 2, score: 15100 },
+            { rank: 11, name: "BeatDemons", sales: 390, followers: 7400, wins: 3, score: 13200 },
+            { rank: 12, name: "KBeaTz", sales: 310, followers: 6900, wins: 2, score: 10800 },
+            { rank: 13, name: "PlutoVibe", sales: 240, followers: 4200, wins: 1, score: 7800 },
+            { rank: 14, name: "Basecamp Beats", sales: 142, followers: 1205, wins: 2, score: 4250, isUser: true }, // Current Logged In Producer
+            { rank: 15, name: "MetroSonics", sales: 120, followers: 2100, wins: 0, score: 3800 },
+            { rank: 16, name: "9thWonderer", sales: 95, followers: 3400, wins: 0, score: 3250 },
+            { rank: 17, name: "ChopGod", sales: 88, followers: 1100, wins: 1, score: 2900 },
+            { rank: 18, name: "GhostBeats", sales: 74, followers: 950, wins: 0, score: 2100 },
+            { rank: 19, name: "808Glitch", sales: 65, followers: 820, wins: 0, score: 1950 },
+            { rank: 20, name: "ApexTracks", sales: 50, followers: 1400, wins: 0, score: 1800 }
+        ];
+
+        const initialOpportunities = [
+            { id: "opp-1", title: "Need Afrobeat Producer", category: "Production", budget: "$600", location: "Remote / Lagos, NG", date: "Posted 2 hours ago", desc: "Major label artist looking for mid-tempo afrobeat backings reminiscent of Rema. Must deliver stems track-outs." },
+            { id: "opp-2", title: "Need Mixing Engineer", category: "Engineering", budget: "$350", location: "Remote / Los Angeles", date: "Posted 5 hours ago", desc: "Urgent need for an expert mixing and mastering specialist to polish a 5-track melodic rap EP project." },
+            { id: "opp-3", title: "Album Cover Designer Needed", category: "Design", budget: "$200", location: "Remote", date: "Posted 1 day ago", desc: "Seeking a 3D surrealist designer to render digital graphics for an upcoming cinematic synthwave instrumental album release." },
+            { id: "opp-4", title: "Need Songwriter", category: "Songwriting", budget: "$500", location: "Remote / London, UK", date: "Posted 2 days ago", desc: "Looking for Topline writers capable of delivering infectious commercial pop and R&B crossover lyrical hooks." },
+            { id: "opp-5", title: "Need Beat Pack Creator", category: "Production", budget: "$1,200", location: "Remote / Atlanta", date: "Posted 3 days ago", desc: "Gaming production agency needs a bundle pack containing 15 energetic electronic trap beats for internal software background use." }
+        ];
+
+        // --- STORAGE STATE INTERFACES MANAGER ---
+        // Challenge Management Local Storage Engine
+        function getStoredChallenges() {
+            /* // TODO: Replace localStorage with Firestore collection: producerChallenges */
+            let stored = localStorage.getItem('audiory_challenges');
+            if(!stored) {
+                localStorage.setItem('audiory_challenges', JSON.stringify(initialChallenges.map(c => ({id: c.id, joined: false, offset: 0}))));
+                return initialChallenges.map(c => ({...c, joined: false}));
+            }
+            let parsed = JSON.parse(stored);
+            return initialChallenges.map(c => {
+                let match = parsed.find(p => p.id === c.id);
+                return { ...c, joined: match ? match.joined : false, offset: match ? match.offset : 0 };
+            });
+        }
+
+        function saveChallengeJoinState(id, joinedState, offsetVal) {
+            let stored = JSON.parse(localStorage.getItem('audiory_challenges') || '[]');
+            let matchIndex = stored.findIndex(p => p.id === id);
+            if(matchIndex > -1) {
+                stored[matchIndex].joined = joinedState;
+                stored[matchIndex].offset = offsetVal;
+            } else {
+                stored.push({id: id, joined: joinedState, offset: offsetVal});
+            }
+            localStorage.setItem('audiory_challenges', JSON.stringify(stored));
+        }
+
+        // Bookmark Opportunity Local Storage Engine
+        function getStoredBookmarks() {
+            /* // TODO: Replace localStorage with Firestore collection: producerBookmarks */
+            return JSON.parse(localStorage.getItem('audiory_bookmarks') || '[]');
+        }
+
+        function toggleBookmarkStorage(id) {
+            let bookmarks = getStoredBookmarks();
+            if(bookmarks.includes(id)) {
+                bookmarks = bookmarks.filter(bId => bId !== id);
+            } else {
+                bookmarks.push(id);
+            }
+            localStorage.setItem('audiory_bookmarks', JSON.stringify(bookmarks));
+            return bookmarks.includes(id);
+        }
+
+        // --- USER SYSTEM CONTROLLER ---
+        // Progression system levels and calculation logic
+        /* // TODO: Replace localStorage with Firestore collection: producerUserMetrics */
+        const userXP = 4250; // Constant seed value for base producer calculation
+        const levelsDefinition = [
+            { name: "Rookie Producer", minXP: 0, maxXP: 1000 },
+            { name: "Rising Producer", minXP: 1001, maxXP: 3000 },
+            { name: "Verified Producer", minXP: 3001, maxXP: 6000 },
+            { name: "Gold Producer", minXP: 6001, maxXP: 12000 },
+            { name: "Platinum Producer", minXP: 12001, maxXP: 25000 },
+            { name: "Legend Producer", minXP: 25001, maxXP: Infinity }
+        ];
+
+        function calculateLevelMetrics(xp) {
+            let currentLevel = levelsDefinition[0];
+            for (let i = 0; i < levelsDefinition.length; i++) {
+                if (xp >= levelsDefinition[i].minXP && xp <= levelsDefinition[i].maxXP) {
+                    currentLevel = levelsDefinition[i];
+                    break;
+                }
+            }
+            let range = currentLevel.maxXP - currentLevel.minXP;
+            let earnedInRange = xp - currentLevel.minXP;
+            let percentage = currentLevel.maxXP === Infinity ? 100 : Math.floor((earnedInRange / range) * 100);
+            return { currentLevel, percentage };
+        }
+
+        // --- APP INITIALIZATION ENGINE ---
+        let currentCategoryFilter = "All";
+        let activeLeaderboardData = [...initialLeaderboard];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderChallenges();
+            renderProgressionSystem();
+            renderLeaderboard();
+            renderOpportunities();
+            initializeAnimations();
+        });
+
+        // --- VIEW RENDER METHODS ---
+
+        // Render Challenges Section
+        function renderChallenges() {
+            const container = document.getElementById("challenges-container");
+            const data = getStoredChallenges();
+            container.innerHTML = "";
+
+            data.forEach(ch => {
+                const totalParticipants = ch.defaultParticipants + (ch.offset || 0);
+                const card = document.createElement("div");
+                card.className = "challenge-card";
+                card.innerHTML = `
+                    <div class="challenge-img-container">
+                        <div class="challenge-status-badge ${ch.joined ? 'active' : ''}">
+                            <i class="fa-solid fa-square-check"></i> Joined
+                        </div>
+                        <i class="${ch.iconClass} challenge-banner-icon"></i>
+                    </div>
+                    <div class="challenge-body">
+                        <h3 class="challenge-title">${ch.title}</h3>
+                        <p class="challenge-desc">${ch.desc}</p>
+                        <div class="challenge-meta">
+                            <div class="meta-item">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <div><span>Deadline</span>${ch.deadline}</div>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fa-solid fa-trophy"></i>
+                                <div><span>Grand Prize</span>${ch.prize}</div>
+                            </div>
+                            <div class="meta-item" style="grid-column: span 2;">
+                                <i class="fa-solid fa-users"></i>
+                                <div><span>Submissions</span><b id="count-${ch.id}">${totalParticipants}</b> entries entered</div>
+                            </div>
+                        </div>
+                        <div class="challenge-actions">
+                            ${ch.joined ? 
+                              `<button class="btn btn-success" disabled><i class="fa-solid fa-check"></i> Registered</button>` : 
+                              `<button class="btn btn-primary" onclick="joinChallenge('${ch.id}')"><i class="fa-solid fa-right-to-bracket"></i> Join</button>`
+                            }
+                            <button class="btn btn-secondary" onclick="alert('Viewing specific requirements, file formats, and baseline references for: ${ch.title}.')">Details</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function joinChallenge(id) {
+            let countElement = document.getElementById(`count-${id}`);
+            if(countElement) {
+                let currentCount = parseInt(countElement.innerText);
+                countElement.innerText = currentCount + 1;
+            }
+            saveChallengeJoinState(id, true, 1);
+            renderChallenges();
+        }
+
+        // Render Badges and Progression Layout
+        function renderProgressionSystem() {
+            /* // TODO: Replace localStorage with Firestore collection: producerBadges */
+            const metrics = calculateLevelMetrics(userXP);
+            
+            // Set Text Properties
+            document.getElementById("level-display-name").innerText = metrics.currentLevel.name;
+            document.getElementById("xp-current-display").innerText = userXP.toLocaleString();
+            document.getElementById("xp-percent-display").innerText = `${metrics.percentage}%`;
+            
+            // Trigger Animate Fill Effect
+            setTimeout(() => {
+                document.getElementById("xp-progress-fill").style.width = `${metrics.percentage}%`;
+            }, 200);
+
+            // Dynamically Swap visual profile icons per level tier
+            const visualBox = document.getElementById("level-visual-icon");
+            if (metrics.currentLevel.name.includes("Rookie") || metrics.currentLevel.name.includes("Rising")) {
+                visualBox.innerHTML = '<i class="fa-solid fa-seedling"></i>';
+            } else if (metrics.currentLevel.name.includes("Verified") || metrics.currentLevel.name.includes("Gold")) {
+                visualBox.innerHTML = '<i class="fa-solid fa-medal"></i>';
+            } else {
+                visualBox.innerHTML = '<i class="fa-solid fa-crown"></i>';
+            }
+
+            // Populate Badges Container Grid
+            const badgesContainer = document.getElementById("badges-container");
+            badgesContainer.innerHTML = "";
+            initialBadges.forEach(badge => {
+                const element = document.createElement("div");
+                element.className = `badge-item ${badge.unlocked ? 'unlocked' : 'locked'}`;
+                element.innerHTML = `
+                    <div class="badge-icon-box">
+                        <i class="${badge.icon}"></i>
+                    </div>
+                    <div class="badge-name">${badge.name}</div>
+                    <div class="badge-status">
+                        ${badge.unlocked ? '<i class="fa-solid fa-circle-check"></i> Unlocked' : '<i class="fa-solid fa-lock"></i> Locked'}
+                    </div>
+                `;
+                badgesContainer.appendChild(element);
+            });
+        }
+
+        // Render Leaderboards Layout Context
+        function renderLeaderboard() {
+            /* // TODO: Replace localStorage with Firestore collection: producerLeaderboard */
+            const tbody = document.getElementById("leaderboard-tbody");
+            tbody.innerHTML = "";
+
+            activeLeaderboardData.forEach(row => {
+                const tr = document.createElement("tr");
+                if(row.isUser) {
+                    tr.className = "row-highlight";
+                }
+
+                let rankVisual = row.rank;
+                if(row.rank === 1) rankVisual = '<i class="fa-solid fa-trophy top-rank-1"></i>';
+                else if(row.rank === 2) rankVisual = '<i class="fa-solid fa-medal top-rank-2"></i>';
+                else if(row.rank === 3) rankVisual = '<i class="fa-solid fa-medal top-rank-3"></i>';
+
+                tr.innerHTML = `
+                    <td class="rank-cell">${rankVisual}</td>
+                    <td>
+                        <div class="producer-cell">
+                            <div class="producer-avatar-placeholder">${row.name.charAt(0)}</div>
+                            <span>${row.name} ${row.isUser ? '<b>(You)</b>' : ''}</span>
+                        </div>
+                    </td>
+                    <td>${row.sales.toLocaleString()}</td>
+                    <td>${row.followers.toLocaleString()}</td>
+                    <td>${row.wins}</td>
+                    <td style="font-weight: 700; color: var(--primary);">${row.score.toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterLeaderboard() {
+            const query = document.getElementById("leaderboard-search").value.toLowerCase();
+            if(query.trim() === "") {
+                activeLeaderboardData = [...initialLeaderboard];
+            } else {
+                activeLeaderboardData = initialLeaderboard.filter(item => item.name.toLowerCase().includes(query));
+            }
+            sortLeaderboard();
+        }
+
+        function sortLeaderboard() {
+            const val = document.getElementById("leaderboard-sort").value;
+            activeLeaderboardData.sort((a, b) => {
+                if(val === "sales") return b.sales - a.sales;
+                if(val === "followers") return b.followers - a.followers;
+                return b.score - a.score;
+            });
+            renderLeaderboard();
+        }
+
+        // Render Opportunities Marketplace Layout Engine
+        function renderOpportunities() {
+            /* // TODO: Replace localStorage with Firestore collection: producerOpportunities */
+            const container = document.getElementById("opportunities-container");
+            const bookmarks = getStoredBookmarks();
+            const searchVal = document.getElementById("opportunities-search").value.toLowerCase();
+            
+            container.innerHTML = "";
+
+            let results = initialOpportunities;
+            if(currentCategoryFilter !== "All") {
+                results = results.filter(o => o.category === currentCategoryFilter);
+            }
+            if(searchVal.trim() !== "") {
+                results = results.filter(o => o.title.toLowerCase().includes(searchVal) || o.desc.toLowerCase().includes(searchVal));
+            }
+
+            results.forEach(opp => {
+                const isBookmarked = bookmarks.includes(opp.id);
+                const card = document.createElement("div");
+                card.className = "opportunity-card";
+                card.innerHTML = `
+                    <div class="opp-header">
+                        <span class="opp-category-badge">${opp.category}</span>
+                        <div class="opp-budget">${opp.budget}</div>
+                    </div>
+                    <h3 class="opp-title">${opp.title}</h3>
+                    <div class="opp-meta-row">
+                        <span><i class="fa-solid fa-location-dot"></i> ${opp.location}</span>
+                        <span><i class="fa-solid fa-clock"></i> ${opp.date}</span>
+                    </div>
+                    <p class="opp-desc">${opp.desc}</p>
+                    <div class="opp-actions">
+                        <button class="btn btn-primary" onclick="alert('Routing submission gateway flow for: ${opp.title}')">Apply</button>
+                        <button class="btn btn-secondary btn-icon-only btn-bookmark ${isBookmarked ? 'bookmarked' : ''}" onclick="bookmarkOpportunity('${opp.id}')">
+                            <i class="${isBookmarked ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+                        </button>
+                        <button class="btn btn-secondary btn-icon-only" onclick="alert('Detailed overview of requirements, criteria, timeline matrix, terms configuration.')">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterCategory(category, element) {
+            currentCategoryFilter = category;
+            const tabs = document.querySelectorAll(".category-tab");
+            tabs.forEach(t => t.classList.remove("active"));
+            element.classList.add("active");
+            renderOpportunities();
+        }
+
+        function filterOpportunities() {
+            renderOpportunities();
+        }
+
+        function bookmarkOpportunity(id) {
+            toggleBookmarkStorage(id);
+            renderOpportunities();
+        }
+
+        // --- INTERACTION & ANIMATION PLUGINS ---
+        function toggleSidebar() {
+            const side = document.getElementById("sidebar");
+            side.classList.toggle("open");
+            const btn = document.getElementById("sidebarToggle").querySelector("i");
+            if(side.classList.contains("open")) {
+                btn.className = "fa-solid fa-xmark";
+            } else {
+                btn.className = "fa-solid fa-bars";
+            }
+        }
+
+        function scrollToSection(sectionId, menuId) {
+            // Remove navigation highlights
+            const items = document.querySelectorAll(".sidebar-item");
+            items.forEach(i => i.classList.remove("active"));
+            
+            // Assign Active
+            const targetedMenu = document.getElementById(`menu-${menuId}`);
+            if(targetedMenu) targetedMenu.classList.add("active");
+
+            const element = document.getElementById(sectionId);
+            if(element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Close responsive mobile navigation wrapper drawer if active
+            const side = document.getElementById("sidebar");
+            if(side.classList.contains("open")) {
+                toggleSidebar();
+            }
+        }
+
+        function initializeAnimations() {
+            // Count-up numbers effect implementation
+            const animTargets = [
+                { id: "stat-challenges", end: 4 },
+                { id: "stat-producers", end: 14208 },
+                { id: "stat-opportunities", end: 12 }
+            ];
+
+            animTargets.forEach(target => {
+                const el = document.getElementById(target.id);
+                if(!el) return;
+                let current = 0;
+                let duration = 1200;
+                let steps = 50;
+                let increment = Math.ceil(target.end / steps);
+                let stepTime = duration / steps;
+
+                let timer = setInterval(() => {
+                    current += increment;
+                    if(current >= target.end) {
+                        el.innerText = target.end.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        el.innerText = current.toLocaleString();
+                    }
+                }, stepTime);
+            });
+        }
+    </script>
+</body>
+</html>
