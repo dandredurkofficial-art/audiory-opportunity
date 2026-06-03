@@ -1182,13 +1182,39 @@
     </main>
 
     <script>
-        /* ==========================================
-           FIREBASE PREPARATION CONTEXT NOTE
-           ------------------------------------------
-           // TODO: Implement Firebase setup configurations here
-           // import { initializeApp } from "firebase/app";
-           // import { getFirestore, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-           ========================================== */
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import {
+          getFirestore,
+          doc,
+          getDoc,
+          setDoc,
+          updateDoc,
+          collection,
+          addDoc,
+          getDocs,
+          query,
+          orderBy
+        } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+        import {
+          getAuth,
+          onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCmsFTjDryYOTddWfScTKsnrs0cWAHnpdc",
+          authDomain: "audiory-beat-store.firebaseapp.com",
+          projectId: "audiory-beat-store",
+          storageBucket: "audiory-beat-store.firebasestorage.app",
+          messagingSenderId: "688272560511",
+          appId: "1:688272560511:web:9031e6ce215d6f08764a4a",
+          measurementId: "G-GLYGWQGS26"
+        };
+
+        const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
 
         // --- SEED DATABASES & INITIAL APPLICATION DATA ---
         const initialChallenges = [
@@ -1256,16 +1282,16 @@
             });
         }
 
-        function saveChallengeJoinState(id, joinedState, offsetVal) {
-            let stored = JSON.parse(localStorage.getItem('audiory_challenges') || '[]');
-            let matchIndex = stored.findIndex(p => p.id === id);
-            if(matchIndex > -1) {
-                stored[matchIndex].joined = joinedState;
-                stored[matchIndex].offset = offsetVal;
-            } else {
-                stored.push({id: id, joined: joinedState, offset: offsetVal});
+        async function saveChallengeJoinState(id) {
+
+          await setDoc(
+            doc(db, "users", currentUser.uid, "joinedChallenges", id),
+            {
+              joined: true,
+              joinedAt: Date.now()
             }
-            localStorage.setItem('audiory_challenges', JSON.stringify(stored));
+          );
+
         }
 
         // Bookmark Opportunity Local Storage Engine
@@ -1288,7 +1314,8 @@
         // --- USER SYSTEM CONTROLLER ---
         // Progression system levels and calculation logic
         /* // TODO: Replace localStorage with Firestore collection: producerUserMetrics */
-        const userXP = 0; // Constant seed value for base producer calculation
+        let userXP = 0;
+        let currentUser = null;
         const levelsDefinition = [
             { name: "Rookie Producer", minXP: 0, maxXP: 1000 },
             { name: "Rising Producer", minXP: 1001, maxXP: 3000 },
@@ -1317,12 +1344,28 @@
         let activeLeaderboardData = [...initialLeaderboard];
 
         document.addEventListener("DOMContentLoaded", () => {
+            onAuthStateChanged(auth, async (user) => {
+
+              if (!user) {
+              location.href = "/login/";
+              return;
+            }
+
+            currentUser = user;
+
+            const userRef = doc(db, "users", user.uid);
+            const snap = await getDoc(userRef);
+
+            if (snap.exists()) {
+              userXP = snap.data().xp || 0;
+            }
+
             renderChallenges();
             renderProgressionSystem();
             renderLeaderboard();
             renderOpportunities();
             initializeAnimations();
-        });
+          });
 
         // --- VIEW RENDER METHODS ---
 
@@ -1373,14 +1416,12 @@
             });
         }
 
-        function joinChallenge(id) {
-            let countElement = document.getElementById(`count-${id}`);
-            if(countElement) {
-                let currentCount = parseInt(countElement.innerText);
-                countElement.innerText = currentCount + 1;
-            }
-            saveChallengeJoinState(id, true, 1);
-            renderChallenges();
+        async function joinChallenge(id) {
+
+          await saveChallengeJoinState(id);
+
+          alert("Challenge joined successfully!");
+
         }
 
         // Render Badges and Progression Layout
