@@ -1192,7 +1192,7 @@
 
         // --- SEED DATABASES & INITIAL APPLICATION DATA ---
         const initialChallenges = [
-            { id: "ch-afro", title: "Afrobeat Challenge", desc: "Craft an authentic, high-energy Burna Boy or Wizkid type riddim. Submissions must feature percussive patterns and organic melodic elements.", deadline: "June 20, 2026", prize: "$500 Cash + Homepage Feature", defaultParticipants: 342, iconClass: "fa-solid fa-drum" },
+            { id: "ch-afro", title: "Afrobeat Challenge", desc: "Craft an authentic, high-energy Burna Boy or Wizkid type riddim. Submissions must feature percussive patterns and organic melodic elements.", deadline: "June 20, 2026", prize: "$500 Cash + Homepage Feature", defaultParticipants: 0, iconClass: "fa-solid fa-drum" },
             { id: "ch-trap", title: "Trap Challenge", desc: "Dark ambient synths combined with aggressive, rolling 808s. Think Metro Boomin meets Future industrial-level production.", deadline: "June 24, 2026", prize: "$300 Cash + Premium Sound Pack", defaultParticipants: 512, iconClass: "fa-solid fa-bolt" },
             { id: "ch-dance", title: "Dancehall Challenge", desc: "Bring modern tropical island energy hit vibes. Focus heavily on syncopated bass grooves and smooth vocal-ready arrangements.", deadline: "June 28, 2026", prize: "$400 Cash + VST Plugin License", defaultParticipants: 189, iconClass: "fa-solid fa-compact-disc" },
             { id: "ch-drill", title: "Drill Challenge", desc: "Sliding sub basslines, complex hi-hat tracks and dark cinematic orchestral textures. UK and New York style variants welcome.", deadline: "June 30, 2026", prize: "$500 Cash + Studio Session Mix", defaultParticipants: 274, iconClass: "fa-solid fa-fire-flame-curved" }
@@ -1288,7 +1288,7 @@
         // --- USER SYSTEM CONTROLLER ---
         // Progression system levels and calculation logic
         /* // TODO: Replace localStorage with Firestore collection: producerUserMetrics */
-        const userXP = 4250; // Constant seed value for base producer calculation
+        const userXP = 0; // Constant seed value for base producer calculation
         const levelsDefinition = [
             { name: "Rookie Producer", minXP: 0, maxXP: 1000 },
             { name: "Rising Producer", minXP: 1001, maxXP: 3000 },
